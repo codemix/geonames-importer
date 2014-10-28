@@ -70,9 +70,17 @@ Importer.prototype.addTransformer = function (transformer) {
 Importer.prototype.createCustomTransformStream = function () {
   var self = this;
   return through.obj(function (item, enc, next) {
-    this.push(self.transformers.reduce(function (item, fn) {
-      return fn(item);
-    }, item));
+    var result = self.transformers.reduce(function (item, fn) {
+      if (!item) {
+        return item;
+      }
+      else {
+        return fn(item);
+      }
+    }, item);
+    if (result) {
+      this.push(result);
+    }
     next();
   });
 };
