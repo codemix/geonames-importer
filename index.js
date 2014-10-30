@@ -59,7 +59,8 @@ Importer.prototype.import = function (filename) {
     .pipe(self.createCustomTransformStream())
     .pipe(self.createBulkTransformStream())
     .pipe(self.createBulkImportStream())
-    .on('end', resolve);
+    .on('error', reject)
+    .on('finish', resolve);
   });
 };
 
@@ -89,7 +90,8 @@ Importer.prototype.postalCodes = function (filename) {
     .pipe(self.createCustomTransformStream())
     .pipe(self.createBulkTransformStream())
     .pipe(self.createBulkImportStream())
-    .on('end', resolve);
+    .on('error', reject)
+    .on('finish', resolve);
   });
 };
 
