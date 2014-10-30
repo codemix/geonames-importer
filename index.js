@@ -26,10 +26,11 @@ function Importer (config) {
 module.exports = Importer;
 
 
-Importer.prototype.import = function () {
+Importer.prototype.import = function (filename) {
   var self = this;
+  filename = filename || self.filename;
   return new Bluebird(function (resolve, reject) {
-    fs.createReadStream(self.filename)
+    fs.createReadStream(filename)
     .pipe(csv.parse({
       delimiter: "\t",
       quote: false,
@@ -61,6 +62,37 @@ Importer.prototype.import = function () {
     .on('end', resolve);
   });
 };
+
+Importer.prototype.postalCodes = function (filename) {
+  var self = this;
+  filename = filename || self.filename;
+  return new Bluebird(function (resolve, reject) {
+    fs.createReadStream(filename)
+    .pipe(csv.parse({
+      delimiter: "\t",
+      quote: false,
+      columns : [
+        'countryCode',
+        'postalCode',
+        'placeName',
+        'admin1Name',
+        'admin1Code',
+        'admin2Name',
+        'admin2Code',
+        'admin3Name',
+        'admin3Code',
+        'latitude',
+        'longitude',
+        'accuracy'
+      ]
+    }))
+    .pipe(self.createCustomTransformStream())
+    .pipe(self.createBulkTransformStream())
+    .pipe(self.createBulkImportStream())
+    .on('end', resolve);
+  });
+};
+
 
 Importer.prototype.addTransformer = function (transformer) {
   this.transformers.push(transformer);
