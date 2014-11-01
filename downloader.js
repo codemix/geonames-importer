@@ -5,7 +5,7 @@ var Bluebird = require('bluebird'),
     fs = Bluebird.promisifyAll(require('fs')),
     request = require('request'),
     uuid = require('node-uuid'),
-    unzip = require('unzip'),
+    unzip = require('node-unzip-2'),
     path = require('path');
 
 function Downloader (config) {
@@ -49,33 +49,44 @@ Downloader.prototype.fetch = function (urlPath) {
 
 Downloader.prototype.unzip = function (filename) {
   var extracted = [],
+      filenames = [],
       self = this;
   return new Bluebird(function (resolve, reject) {
     fs.createReadStream(filename)
     .pipe(unzip.Parse())
     .on('entry', function (entry) {
       if (entry.type === 'File' && !/read(.*)\.txt/.test(entry.path)) {
-        var tmpFilename = self.createTempFileName();
-        extracted.push(new Bluebird(function (resolve, reject) {
-          entry
-          .pipe(fs.createWriteStream(tmpFilename))
-          .on('finish', resolve)
-          .on('error', reject);
-        }).return(tmpFilename));
+        extracted.push(
+          self.extractEntry(entry)
+          .then(function (filename) {
+            var last = extracted.shift();
+            filenames.push(filename);
+            if (!extracted.length) {
+              resolve(filenames);
+            }
+          })
+        );
       }
       else {
         entry.autodrain();
       }
     })
+    .on('error', reject);
+  })
+  .then(function (extractedFilenames) {
+    return fs.unlinkAsync(filename).return(extractedFilenames.length === 1 ? extractedFilenames[0] : extractedFilenames);
+  });
+};
+
+Downloader.prototype.extractEntry = function (entry) {
+  var filename = this.createTempFileName();
+  return new Bluebird(function (resolve, reject) {
+    entry
+    .pipe(fs.createWriteStream(filename))
     .on('finish', resolve)
     .on('error', reject);
   })
-  .then(function () {
-    return Bluebird.all(extracted);
-  })
-  .then(function (extractedFilenames) {
-    return fs.unlinkAsync(filename).return(extractedFilenames);
-  });
+  .return(filename);
 };
 
 module.exports = Downloader;

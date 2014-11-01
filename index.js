@@ -29,7 +29,7 @@ module.exports = Importer;
 Importer.prototype.import = function (filename) {
   var self = this;
   return Bluebird.cast(filename || self.filename)
-  .then(function (filename)) {
+  .then(function (filename) {
     return new Bluebird(function (resolve, reject) {
       fs.createReadStream(filename)
       .pipe(csv.parse({
@@ -63,13 +63,14 @@ Importer.prototype.import = function (filename) {
       .on('error', reject)
       .on('finish', resolve);
     })
-  });
+  })
+  .return(filename);
 };
 
 Importer.prototype.postcodes = function (filename) {
   var self = this;
   return Bluebird.cast(filename || self.filename)
-  .then(function (filename)) {
+  .then(function (filename) {
     return new Bluebird(function (resolve, reject) {
       fs.createReadStream(filename)
       .pipe(csv.parse({
@@ -96,7 +97,8 @@ Importer.prototype.postcodes = function (filename) {
       .on('error', reject)
       .on('finish', resolve);
     });
-  });
+  })
+  .return(filename);
 };
 
 
