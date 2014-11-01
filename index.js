@@ -66,7 +66,7 @@ Importer.prototype.import = function (filename) {
   });
 };
 
-Importer.prototype.postalCodes = function (filename) {
+Importer.prototype.postcodes = function (filename) {
   var self = this;
   return Bluebird.cast(filename || self.filename)
   .then(function (filename)) {
