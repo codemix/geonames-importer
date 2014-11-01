@@ -1,6 +1,6 @@
 {
   "name": "geonames-importer",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Imports geonames data into elasticsearch (and others in future)",
   "main": "index.js",
   "scripts": {

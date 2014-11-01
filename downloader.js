@@ -72,6 +72,9 @@ Downloader.prototype.unzip = function (filename) {
   })
   .then(function () {
     return Bluebird.all(extracted);
+  })
+  .then(function (extractedFilenames) {
+    return fs.unlinkAsync(filename).return(extractedFilenames);
   });
 };
 
