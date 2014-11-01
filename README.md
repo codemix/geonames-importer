@@ -41,6 +41,21 @@ importer
   console.log('finished');
 })
 .done();
+
+// or, with downloader
+
+var Downloader = require('geonames-importer/downloader');
+
+var downloader = new Downloader({
+  tmp: '/tmp'
+});
+
+importer
+.import(downloader.cities(1000))
+.then(function () {
+  console.log('finished');
+})
+.done();
 ```
 
 ## License

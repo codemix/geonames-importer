@@ -1,6 +1,6 @@
 {
   "name": "geonames-importer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Imports geonames data into elasticsearch (and others in future)",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,11 @@
     "csv": "^0.4.0",
     "elasticsearch": "^2.4.3",
     "elasticsearch-streams": "0.0.6",
-    "through2": "^0.6.3"
+    "mkdirp": "^0.5.0",
+    "node-uuid": "^1.4.1",
+    "request": "^2.47.0",
+    "through2": "^0.6.3",
+    "unzip": "^0.1.11"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",

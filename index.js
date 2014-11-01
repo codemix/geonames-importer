@@ -28,70 +28,74 @@ module.exports = Importer;
 
 Importer.prototype.import = function (filename) {
   var self = this;
-  filename = filename || self.filename;
-  return new Bluebird(function (resolve, reject) {
-    fs.createReadStream(filename)
-    .pipe(csv.parse({
-      delimiter: "\t",
-      quote: false,
-      columns : [
-        'id',
-        'name',
-        'asciiName',
-        'alternateNames',
-        'latitude',
-        'longitude',
-        'featureClass',
-        'featureCode',
-        'countryCode',
-        'cc2',
-        'admin1Code',
-        'admin2Code',
-        'admin3Code',
-        'admin4Code',
-        'population',
-        'elevation',
-        'dem',
-        'timezone',
-        'modificationDate'
-      ]
-    }))
-    .pipe(self.createCustomTransformStream())
-    .pipe(self.createBulkTransformStream())
-    .pipe(self.createBulkImportStream())
-    .on('error', reject)
-    .on('finish', resolve);
+  return Bluebird.cast(filename || self.filename)
+  .then(function (filename)) {
+    return new Bluebird(function (resolve, reject) {
+      fs.createReadStream(filename)
+      .pipe(csv.parse({
+        delimiter: "\t",
+        quote: false,
+        columns : [
+          'id',
+          'name',
+          'asciiName',
+          'alternateNames',
+          'latitude',
+          'longitude',
+          'featureClass',
+          'featureCode',
+          'countryCode',
+          'cc2',
+          'admin1Code',
+          'admin2Code',
+          'admin3Code',
+          'admin4Code',
+          'population',
+          'elevation',
+          'dem',
+          'timezone',
+          'modificationDate'
+        ]
+      }))
+      .pipe(self.createCustomTransformStream())
+      .pipe(self.createBulkTransformStream())
+      .pipe(self.createBulkImportStream())
+      .on('error', reject)
+      .on('finish', resolve);
+    })
   });
 };
 
 Importer.prototype.postalCodes = function (filename) {
   var self = this;
-  filename = filename || self.filename;
-  return new Bluebird(function (resolve, reject) {
-    fs.createReadStream(filename)
-    .pipe(csv.parse({
-      delimiter: "\t",
-      quote: false,
-      columns : [
-        'countryCode',
-        'postalCode',
-        'placeName',
-        'admin1Name',
-        'admin1Code',
-        'admin2Name',
-        'admin2Code',
-        'admin3Name',
-        'admin3Code',
-        'latitude',
-        'longitude',
-        'accuracy'
-      ]
-    }))
-    .pipe(self.createCustomTransformStream())
-    .pipe(self.createBulkTransformStream())
-    .pipe(self.createBulkImportStream())
-    .on('error', reject)
-    .on('finish', resolve);
+  return Bluebird.cast(filename || self.filename)
+  .then(function (filename)) {
+    return new Bluebird(function (resolve, reject) {
+      fs.createReadStream(filename)
+      .pipe(csv.parse({
+        delimiter: "\t",
+        quote: false,
+        columns : [
+          'countryCode',
+          'postalCode',
+          'placeName',
+          'admin1Name',
+          'admin1Code',
+          'admin2Name',
+          'admin2Code',
+          'admin3Name',
+          'admin3Code',
+          'latitude',
+          'longitude',
+          'accuracy'
+        ]
+      }))
+      .pipe(self.createCustomTransformStream())
+      .pipe(self.createBulkTransformStream())
+      .pipe(self.createBulkImportStream())
+      .on('error', reject)
+      .on('finish', resolve);
+    });
   });
 };
 
